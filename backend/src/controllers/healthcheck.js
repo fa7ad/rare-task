@@ -1,16 +1,18 @@
-const { Router } = require("express");
-const db = require("../data");
+const { Router } = require('express');
+const db = require('../data');
+const _tc = require('../helpers/trycatch');
 
 const healthcheckCtl = Router();
 
-healthcheckCtl.get("/", async (req, res) => {
-  try {
-    const timestamp = +Date.now();
+healthcheckCtl.get(
+  '/',
+  _tc(async (req, res) => {
+    const timestamp = Date.now();
 
     await db.healthcheck.upsert({
       where: { id: 1 },
       create: { timestamp },
-      update: { timestamp },
+      update: { timestamp }
     });
 
     const finalTime = Date.now();
@@ -18,15 +20,9 @@ healthcheckCtl.get("/", async (req, res) => {
     res.json({
       success: true,
       time: finalTime,
-      dbUpsertDelay: finalTime - timestamp,
+      dbUpsertDelay: finalTime - timestamp
     });
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      success: false,
-      error,
-    });
-  }
-});
+  })
+);
 
 module.exports = healthcheckCtl;

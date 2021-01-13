@@ -11,3 +11,33 @@ model Healthcheck {
   id Int @default(autoincrement()) @id
   timestamp Int
 }
+
+model Listing {
+  id Int @default(autoincrement()) @id
+  title String
+  description String
+  city String
+  country String
+  rating Float? @default(0)
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  comments Comment[]
+
+  @@index(fields: [title, description, city, country], name: "text_index")
+}
+
+model User {
+  id Int @default(autoincrement()) @id
+  username String @unique
+  password String
+  full_name String
+  avatar String?
+  role String? @default("user")
+}
+
+model Comment {
+  id Int @default(autoincrement()) @id
+  listing Listing @relation(fields: [listingId],references: [id])
+  listingId Int
+  comment String
+}
