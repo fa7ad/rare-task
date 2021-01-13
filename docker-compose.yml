@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  frontend:
+    build:
+      context: frontend
+      target: development
+    networks:
+      - client-side
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/home/node/app
+      - frontend-cache:/home/node/app/node_modules
+  backend:
+    build:
+      context: backend
+      target: development
+    env_file:
+      - ./backend/.env
+    networks:
+      - client-side
+      - server-side
+    volumes:
+      - ./backend:/home/node/app
+      - backend-cache:/home/node/app/node_modules
+    depends_on:
+      - db
+  db:
+    image: postgres:12-alpine
+    restart: always
+    env_file:
+      - ./db/.env
+    networks:
+      - server-side
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+networks:
+  client-side: {}
+  server-side: {}
+
+volumes:
+  backend-cache: {}
+  frontend-cache: {}
+  db-data: {}
