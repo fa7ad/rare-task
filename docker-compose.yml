@@ -4,6 +4,8 @@ services:
     build:
       context: frontend
       target: development
+    env_file:
+      - ./frontend/dev.env
     networks:
       - client-side
     ports:
@@ -16,10 +18,12 @@ services:
       context: backend
       target: development
     env_file:
-      - ./backend/.env
+      - ./backend/dev.env
     networks:
       - client-side
       - server-side
+    ports:
+      - 8000:8000
     volumes:
       - ./backend:/home/node/app
       - backend-cache:/home/node/app/node_modules
@@ -29,7 +33,7 @@ services:
     image: postgres:12-alpine
     restart: always
     env_file:
-      - ./db/.env
+      - ./db/dev.env
     networks:
       - server-side
     ports:
