@@ -1,6 +1,9 @@
+import Footer from 'app/components/Footer';
+import LandingListing from 'app/components/LandingListing';
 import Navigation from 'app/components/Navigation';
-import Rating from 'app/components/Rating';
-import { Col, Container, Row } from 'reactstrap';
+import TallListing from 'app/components/TallListing';
+import { stringify } from 'app/utils/qs';
+import { Container, Row } from 'reactstrap';
 
 const Listings_DEMO = [
   {
@@ -58,21 +61,25 @@ const Listings_DEMO = [
     country: 'Ukraine'
   }
 ];
-const FIXED_AVATAR = `https://justice.org.au/wp-content/uploads/2017/08/avatar-icon.png`;
 
-function HomePage() {
+function HomePage({ history }) {
+  const handleSearch = query => {
+    const q = stringify(query);
+    history.push(`/search?${q}`);
+  };
+
   return (
     <>
-      <Navigation />
-      <Container className=''>
-        <Row className='rare__searchbanner my-4'>
+      <Navigation onSearch={handleSearch} />
+      <Container>
+        <Row className='rare__searchbanner my-4 mx-0 bg-primary text-white p-2'>
           <div className='searchbanner__text'>
             <h3>Resorts</h3>
             <p>Treat yourself! Your dream resort stay is just a few clicks away.</p>
           </div>
         </Row>
         <Row>
-          <Container fluid>
+          <Container fluid className='mt-4'>
             <h3>What guests are saying about our homes in the United Kingdom</h3>
             <p>
               🌟 &nbsp;United Kingdom homes were rated <strong>4.7 out of 5 stars</strong> with{' '}
@@ -80,28 +87,23 @@ function HomePage() {
             </p>
             <Row>
               {Listings_DEMO.map(li => (
-                <Col sm='4' className='rare__card' key={li.title}>
-                  <img src={li.image} alt='' className='w-100' />
-                  <Rating count={li.rating} />
-                  <p className='text-muted'>
-                    {li.comments.slice(0, 140)}
-                    {li.comments.length > 140 && '...'}
-                  </p>
-                  <Row className='align-items-center my-3'>
-                    <Col xs={3} className='rounded-full'>
-                      <img src={li.avatar ?? FIXED_AVATAR} alt='' className='w-100' />
-                    </Col>
-                    <Col xs={9}>
-                      <div className='text-bold'>{li.username}</div>
-                      <div className='text-muted'>{li.country}</div>
-                    </Col>
-                  </Row>
-                </Col>
+                <LandingListing {...li} key={li.title + li.username} />
+              ))}
+            </Row>
+          </Container>
+        </Row>
+        <Row>
+          <Container fluid className='mt-4'>
+            <h3>Just Booked</h3>
+            <Row>
+              {Listings_DEMO.map(li => (
+                <TallListing {...li} key={li.title + li.username} />
               ))}
             </Row>
           </Container>
         </Row>
       </Container>
+      <Footer />
     </>
   );
 }

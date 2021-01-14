@@ -10,7 +10,17 @@ const HTTPError = require('../helpers/httpError');
 
 const { ensureUserRole } = require('../middleware/auth');
 
-const LISTING_REQUIRED = ['title', 'description', 'city', 'country', 'rating', 'type', 'dates_available'];
+const LISTING_REQUIRED = [
+  'title',
+  'description',
+  'city',
+  'country',
+  'rating',
+  'type',
+  'dates_available',
+  'price',
+  'images'
+];
 
 const listingCtl = Router();
 
@@ -27,24 +37,26 @@ listingCtl.get(
      * @type {import('@prisma/client').User[]}
      */
     const searchResult = await db.$queryRaw`SELECT * FROM Listing WHERE to_tsvector(title) || to_tsvector(description) || to_tsvector(city) || to_tsvector(country) @@ to_tsquery(${search})`;
-    const fts_ids = searchResult.filter(listing => {
-      let show = true
-      if(req.query.type) {
-        const type = req.query.type
-        show &&= `${type}`.toLowerCase() === `${listing.type}`.toLowerCase()
-      }
-      if(req.query.min_date) {
-        const min_date = day(min_date)
-        const min_listing = day(listing.dates_available?.min_date)
-        show &&= min_listing.isBefore(min_date) || min_listing.isSame(min_date)
-      }
-      if(req.query.max_date) {
-        const max_date = day(max_date)
-        const max_listing = day(listing.dates_available?.max_date)
-        show &&= max_listing.isAfter(max_date) || max_listing.isSame(max_date)
-      }
-      return show
-    }).map(({ id }) => id);
+    const fts_ids = searchResult
+      .filter(listing => {
+        let show = true;
+        if (req.query.type) {
+          const type = req.query.type;
+          show &&= `${type}`.toLowerCase() === `${listing.type}`.toLowerCase();
+        }
+        if (req.query.min_date) {
+          const min_date = day(min_date);
+          const min_listing = day(listing.dates_available?.min_date);
+          show &&= min_listing.isBefore(min_date) || min_listing.isSame(min_date);
+        }
+        if (req.query.max_date) {
+          const max_date = day(max_date);
+          const max_listing = day(listing.dates_available?.max_date);
+          show &&= max_listing.isAfter(max_date) || max_listing.isSame(max_date);
+        }
+        return show;
+      })
+      .map(({ id }) => id);
 
     const _listings = await db.listing.findMany({
       take,

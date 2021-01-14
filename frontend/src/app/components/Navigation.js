@@ -20,7 +20,7 @@ const loginLink = {
   }
 };
 
-function Navigation() {
+function Navigation({ onSearch }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -31,7 +31,7 @@ function Navigation() {
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <NavbarText className='mr-auto d-flex col-sm-6'>
-            <SplitSearch />
+            <SplitSearch onSearch={onSearch} />
           </NavbarText>
           <Nav navbar>
             <NavItem>

@@ -10,5 +10,5 @@
 }
 .rare__search .input-group-prepend + .form-control {
   border-left: 0;
-  font-size: 1.25em;
+  line-height: 2rem;
 }
