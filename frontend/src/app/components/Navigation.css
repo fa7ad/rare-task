@@ -1,0 +1,41 @@
+.rare__navigation {
+  box-shadow: 0 2px 5px #ddd;
+  background: #fff;
+  margin-right: -15px;
+  margin-left: -15px;
+  padding: 0 15px;
+}
+.rare__navtabs {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.rare__navtabs .nav.nav-tabs {
+  border-bottom: 0;
+  flex-wrap: nowrap;
+}
+.rare__navtabs .nav.nav-tabs a.nav-link {
+  text-transform: uppercase;
+  color: #111;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+.rare__navtabs .nav.nav-tabs a.nav-link.active,
+.rare__navtabs .nav.nav-tabs a.nav-link:hover {
+  border: 1px solid transparent;
+  color: #2aa799;
+  position: relative;
+  background: transparent;
+  cursor: pointer;
+}
+.rare__navtabs .nav.nav-tabs a.nav-link.active::after,
+.rare__navtabs .nav.nav-tabs a.nav-link:hover::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  left: 10px;
+  right: 10px;
+  background: #2aa799;
+  z-index: 99;
+}

@@ -18,6 +18,9 @@ model Listing {
   description String
   city String
   country String
+  type String
+  dates_available Json
+  images String[]
   rating Float? @default(0)
   user User @relation(fields: [userId], references: [id])
   userId Int
