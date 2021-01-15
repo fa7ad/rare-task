@@ -7,7 +7,7 @@ const PORT = parseInt(process.env.PORT || '8000', 10);
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '256mb' }));
 
 app.use('/healthcheck', require('./controllers/healthcheck'));
 app.use('/auth', require('./controllers/auth'));
