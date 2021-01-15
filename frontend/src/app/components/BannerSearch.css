@@ -1,0 +1,27 @@
+.rare__searchbanner {
+  background: #213865;
+}
+
+.rare__bannersearch {
+  border-radius: 5px;
+  border: 4px solid #F5BC42;
+  width: 100%;
+}
+.rare__bannersearch .input-group-prepend .input-group-text {
+  background-color: #fff;
+  font-size: 1.25em;
+  border-radius: 0;
+  border: 0;
+}
+.rare__bannersearch .input-group-prepend + .form-control {
+  height: 3.5rem;
+  border: 0;
+  padding: 0.5em;
+  border-right: 4px solid #F5BC42;
+}
+
+.rare__searchbanner button.btn-primary {
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+}

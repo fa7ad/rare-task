@@ -1,12 +1,12 @@
-function Rating({ count, children }) {
+function Rating({ count, children, fillColor = '#2aa799', blankColor = '#666' }) {
   const clamped = Math.min(Math.max(0, count), 5) | 0;
   const colored = Array.from({ length: clamped }, (_, i) => (
-    <span key={`starc_${i}`} style={{ color: '#2aa799' }}>
+    <span key={`starc_${i}`} style={{ color: fillColor }}>
       ★
     </span>
   ));
   const blanks = Array.from({ length: 5 - clamped }, (_, i) => (
-    <span key={`starb_${i}`} style={{ color: '#666' }}>
+    <span key={`starb_${i}`} style={{ color: blankColor }}>
       ★
     </span>
   ));

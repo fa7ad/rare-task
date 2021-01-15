@@ -1,17 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { FaAirbnb } from 'react-icons/fa';
+import { Input } from 'reactstrap';
 function Footer() {
   return (
     <section id='footer' className='border-top px-0 py-4 mt-5'>
       <div className='container'>
         <div className='row text-center text-xs-center text-sm-left text-md-left'>
-          <div className='col-xs-12 col-sm-3 col-md-3 d-flex flex-column h3 text-secondary'>
-            <select>
+          <div className='col-xs-12 col-sm-3 col-md-3 d-flex flex-column h4 text-secondary'>
+            <Input className='my-2' type='select'>
               <option>English</option>
-            </select>
-            <select>
-              <option>INR</option>
-            </select>
+            </Input>
+            <Input className='my-2' type='select'>
+              <option>USD</option>
+            </Input>
           </div>
           <div className='col-xs-12 col-sm-3 col-md-3'>
             <h5>Airbnb</h5>

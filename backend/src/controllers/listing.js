@@ -1,4 +1,3 @@
-const day = require('dayjs');
 const { Router } = require('express');
 const { pickAll, omit, over, lensProp, isNil, map, compose, reject } = require('ramda');
 
@@ -26,37 +25,39 @@ const listingCtl = Router();
 
 listingCtl.get(
   '/',
-  ensureUserRole('user'),
   _tc(async (req, res) => {
     const take = Number(req.query?.limit || 10);
     const _page = Number(req.query?.page || 1);
-    const search = req.query?.search || '';
+    const min_rating = Number(req.query?.min_rating || 0);
+    const type = req.query?.type ?? '';
+    const min_date = req.query?.min_date || '';
+    const max_date = req.query?.max_date || '';
+    const search = (req.query?.search || '').trim();
     const page = Math.max(0, _page - 1);
+    const fts_query = search.replace(/[!'()|&]/g, ' ').replace(/\s+/g, ' & ') + ':*';
+    const ilike_query = `%${search}%`;
 
     /**
-     * @type {import('@prisma/client').User[]}
+     * @type {Array<{id: number}>}
      */
-    const searchResult = await db.$queryRaw`SELECT * FROM Listing WHERE to_tsvector(title) || to_tsvector(description) || to_tsvector(city) || to_tsvector(country) @@ to_tsquery(${search})`;
-    const fts_ids = searchResult
-      .filter(listing => {
-        let show = true;
-        if (req.query.type) {
-          const type = req.query.type;
-          show &&= `${type}`.toLowerCase() === `${listing.type}`.toLowerCase();
-        }
-        if (req.query.min_date) {
-          const min_date = day(min_date);
-          const min_listing = day(listing.dates_available?.min_date);
-          show &&= min_listing.isBefore(min_date) || min_listing.isSame(min_date);
-        }
-        if (req.query.max_date) {
-          const max_date = day(max_date);
-          const max_listing = day(listing.dates_available?.max_date);
-          show &&= max_listing.isAfter(max_date) || max_listing.isSame(max_date);
-        }
-        return show;
-      })
-      .map(({ id }) => id);
+    const searchResult = await db.$queryRaw`SELECT id
+FROM (SELECT public."Listing".*, concat_ws(' ', title, description, city, country, type) AS fts_idx
+      FROM public."Listing") ftslisting
+WHERE
+  CASE ${fts_query}
+      WHEN ':*' THEN TRUE
+      ELSE to_tsvector(fts_idx) @@ to_tsquery(${fts_query}) OR fts_idx ILIKE ${ilike_query} END
+  AND CASE ${type} WHEN '' THEN TRUE ELSE type = ${type} END
+  AND CASE ${min_date}
+          WHEN '' THEN TRUE
+          ELSE to_date(dates_available ->> 'min_date', 'YYYY-MM-DD') <= to_date(${min_date}, 'YYYY-MM-DD') AND
+               to_date(dates_available ->> 'max_date', 'YYYY-MM-DD') >= to_date(${min_date}, 'YYYY-MM-DD')
+          END
+  AND CASE ${max_date}
+          WHEN '' THEN TRUE
+          ELSE to_date(dates_available ->> 'max_date', 'YYYY-MM-DD') >= to_date(${max_date}, 'YYYY-MM-DD') END
+  AND rating >= ${min_rating}`;
+    const fts_ids = searchResult.map(({ id }) => id);
 
     const _listings = await db.listing.findMany({
       take,
@@ -67,9 +68,30 @@ listingCtl.get(
         comments: true
       }
     });
-    const listings = _listings.map(over(lensProp('user'), omit(['password'])));
+    const listings = _listings.map(over(lensProp('user'), omit(['password', 'role'])));
 
     res.json({ success: true, listings });
+  })
+);
+
+listingCtl.get(
+  '/:id',
+  _tc(async (req, res) => {
+    const id = Number(req.params?.id || '-1');
+    if (id === -1) throw new HTTPError(400, 'Invalid ID');
+    const _listing = await db.listing.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        comments: true
+      }
+    });
+    if (!_listing?.id > 0) throw new HTTPError(404, 'Not Found');
+    const listing = over(lensProp('user'), omit(['password', 'role']))(_listing);
+    res.json({
+      success: true,
+      listing
+    });
   })
 );
 

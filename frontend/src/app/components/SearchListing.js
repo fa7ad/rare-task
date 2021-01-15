@@ -3,7 +3,7 @@ const FALLBACK_LISTING = `https://cdn.vox-cdn.com/thumbor/CTluvlc9kScZlylzsRR4QR
 
 function SearchListing(props) {
   return (
-    <Col xs={12} className='d-flex my-2'>
+    <Col xs={12} className='d-flex my-2 pointer' onClick={props.onClick ?? (() => {})}>
       <Col xs={4} className='rounded-lg'>
         <img src={props.images?.[0] ?? FALLBACK_LISTING} alt='' className='w-100 rounded-lg' />
       </Col>
@@ -12,14 +12,14 @@ function SearchListing(props) {
           <p className='text-muted mr-auto'>{props.type}</p>
           <p className='text-muted'>
             <span className='text-danger'>★ </span> {props.rating}{' '}
-            <span className='text-muted'>({(Math.random() * 100) | 0})</span>
+            <span className='text-muted'>({props.comments.length})</span>
           </p>
         </div>
         <h3>{props.title}</h3>
         <p className='text-muted'>{props.description}</p>
         <div className='d-flex justify-content-end'>
           <h3>
-            <strong>{props.price}</strong> / night
+            <strong>${props.price}</strong> / night
           </h3>
         </div>
       </Col>
